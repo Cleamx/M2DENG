@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profil — Team</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="data.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <button class="back-button" onclick="goBack()">← Retour à l'équipe</button>
+        <div class="detail-container">
+            <div class="detail-header">
+                <img id="detailImage" class="detail-image" src="" alt="" />
+                <div class="detail-info">
+                    <h2 id="detailName"></h2>
+                    <p class="role" id="detailRole"></p>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <h3>Détails</h3>
+                <ul id="detailMeta" class="details-list"></ul>
+            </div>
+            <div class="detail-section">
+                <h3>Coding strengths</h3>
+                <ul id="detailStrengths"></ul>
+            </div>
+            <div class="detail-section">
+                <h3>Coding weaknesses</h3>
+                <ul id="detailWeaknesses"></ul>
+            </div>
+            <div class="detail-section">
+                <h3>Biggest achievement in coding</h3>
+                <p id="detailAchievement"></p>
+            </div>
+            <div class="detail-section">
+                <h3>Interesting fact</h3>
+                <p id="detailFunFact"></p>
+            </div>
+            <div class="detail-section">
+                <h3>Future plans</h3>
+                <p id="detailFuturePlans"></p>
+            </div>
+            <div class="detail-section">
+                <h3>Contact</h3>
+                <p id="detailContact"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function params() {
+            const p = new URLSearchParams(window.location.search);
+            return {
+                id: p.get('id'),
+                name: p.get('name')
+            };
+        }
+
+        function renderProfile(member) {
+            const defaults = {
+                dob: null,
+                placeOfBirth: member.location_birth || '',
+                nationality: member.nationality || '',
+                flag: member.flag || '',
+                strengths: member.strengths || member.skills || [],
+                weaknesses: member.weaknesses || [],
+                achievement: member.achievement || member.biggest_achivement || '',
+                funFact: member.funFact || member.funfact || '',
+                bio: member.bio || ''
+            };
+            const m = { ...member, ...defaults };
+
+            document.getElementById('detailImage').src = m.image;
+            document.getElementById('detailName').textContent = m.name || '';
+            document.getElementById('detailRole').textContent = m.role || '';
+            document.getElementById('detailContact').textContent = m.contact ? `Email: ${m.contact}` : '';
+
+            const meta = document.getElementById('detailMeta');
+            meta.innerHTML = '';
+
+            const age = computeAge(m.dob) ?? (typeof m.age === 'number' ? m.age : null);
+            const dobTxt = m.dob ? formatDate(m.dob) : null;
+            const placeTxt = m.placeOfBirth || '';
+            const natTxt = m.flag || m.nationality || '';
+
+            const metaItems = [
+                ['Name', m.name || '—'],
+                ['Age', age ? `${age} years` : '—'],
+                ['Place of birth / Nationality', `${placeTxt || '—'}${natTxt ? ` / ${natTxt}` : ''}`]
+            ];
+            metaItems.forEach(([label, value]) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${label}</span><strong>${value}</strong>`;
+                meta.appendChild(li);
+            });
+
+            fillList('detailStrengths', Array.isArray(m.strengths) ? m.strengths : []);
+            fillList('detailWeaknesses', Array.isArray(m.weaknesses) ? m.weaknesses : []);
+            document.getElementById('detailAchievement').textContent = m.achievement || '—';
+            document.getElementById('detailFunFact').textContent = m.funFact || '—';
+            document.getElementById('detailFuturePlans').textContent = m.future_plan || '—';
+        }
+
+        function fillList(id, items) {
+            const el = document.getElementById(id);
+            el.innerHTML = '';
+            if (!items || items.length === 0) {
+                const li = document.createElement('li');
+                li.textContent = '—';
+                el.appendChild(li);
+                return;
+            }
+            items.forEach((text) => {
+                const li = document.createElement('li');
+                li.textContent = text;
+                el.appendChild(li);
+            });
+        }
+
+        function computeAge(dobStr) {
+            if (!dobStr) return null;
+            const d = new Date(dobStr);
+            if (isNaN(d.getTime())) return null;
+            const today = new Date();
+            let age = today.getFullYear() - d.getFullYear();
+            const m = today.getMonth() - d.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+            return age;
+        }
+
+        function formatDate(dobStr) {
+            const d = new Date(dobStr);
+            if (isNaN(d.getTime())) return dobStr;
+            const dd = String(d.getDate()).padStart(2, '0');
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const yyyy = d.getFullYear();
+            return `${dd}/${mm}/${yyyy}`;
+        }
+
+        function goBack() {
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Init
+        (function init() {
+            if (typeof teamMembers === 'undefined' || !Array.isArray(teamMembers)) {
+                document.body.innerHTML += '<p style="text-align:center;color:#b91c1c">Team data not found.</p>';
+                return;
+            }
+            const { id, name } = params();
+            let member = null;
+            if (id !== null) {
+                const idx = parseInt(id, 10);
+                if (!isNaN(idx) && idx >= 0 && idx < teamMembers.length) {
+                    member = teamMembers[idx];
+                }
+            } else if (name) {
+                member = teamMembers.find(m => m.name === name);
+            }
+            if (!member) {
+                document.body.innerHTML += '<p style="text-align:center;color:#b91c1c">Profil introuvable.</p>';
+                return;
+            }
+            renderProfile(member);
+        })();
+    </script>
+</body>
+
+</html>

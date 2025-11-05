@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js"></script>
+</head>
+
+<body>
+    <div class="container" id="mainPage">
+        <h1>Our team</h1>
+        <div class="filters" id="filters"></div>
+        <div class="team-grid" id="teamGrid">
+        </div>
+    </div>
+
+    <div class="detail-page" id="detailPage">
+        <div class="detail-container">
+            <button class="back-button" onclick="goBack()">← Retour à l'équipe</button>
+            <div class="detail-header">
+                <img id="detailImage" class="detail-image" src="" alt="">
+                <div class="detail-info">
+                    <h2 id="detailName"></h2>
+                    <p class="role" id="detailRole"></p>
+                </div>
+            </div>
+            <div class="detail-section">
+                <h3>Détails</h3>
+                <ul id="detailMeta" class="details-list"></ul>
+            </div>
+            <div class="detail-section">
+                <h3>Coding strengths</h3>
+                <ul id="detailStrengths"></ul>
+            </div>
+            <div class="detail-section">
+                <h3>Coding weaknesses</h3>
+                <ul id="detailWeaknesses"></ul>
+            </div>
+            <div class="detail-section">
+                <h3>Biggest achievement in coding</h3>
+                <p id="detailAchievement"></p>
+            </div>
+            <div class="detail-section">
+                <h3>Interesting fact</h3>
+                <p id="detailFunFact"></p>
+            </div>
+            <div class="detail-section">
+                <h3>Contact</h3>
+                <p id="detailContact"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        const GROUP_LABELS = {
+            data: "Data",
+            dev: "Développement",
+            design: "Design / UX",
+            management: "Management",
+            devops: "DevOps",
+            security: "Sécurité",
+            product: "Produit",
+            mobile: "Mobile",
+            qa: "QA",
+            marketing: "Marketing",
+            architecture: "Architecture",
+            business: "Business",
+            consulting: "Consulting"
+        };
+
+        let currentFilter = 'all';
+
+        function generateFilters() {
+            const filtersEl = document.getElementById('filters');
+            const groups = Array.from(new Set(teamMembers.map(m => m.group))).sort();
+            const counts = groups.reduce((acc, g) => {
+                acc[g] = teamMembers.filter(m => m.group === g).length;
+                return acc;
+            }, {});
+
+            const buttons = [];
+            buttons.push(`<button class="filter-btn ${currentFilter === 'all' ? 'active' : ''}" data-filter="all">Tous (${teamMembers.length})</button>`);
+            groups.forEach(g => {
+                const label = GROUP_LABELS[g] || g;
+                buttons.push(`<button class="filter-btn ${currentFilter === g ? 'active' : ''}" data-filter="${g}">${label} (${counts[g]})</button>`);
+            });
+            filtersEl.innerHTML = buttons.join('');
+
+            filtersEl.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentFilter = btn.getAttribute('data-filter');
+                    generateFilters();
+                    generateTeamCards();
+                });
+            });
+        }
+
+        function generateTeamCards() {
+            const teamGrid = document.getElementById('teamGrid');
+            teamGrid.innerHTML = '';
+
+            const filtered = currentFilter === 'all' ? teamMembers : teamMembers.filter(m => m.group === currentFilter);
+
+            filtered.forEach((member) => {
+                const card = document.createElement('div');
+                card.className = `team-card group-${member.group}`;
+                card.setAttribute('data-group', member.group);
+                const originalIndex = teamMembers.indexOf(member);
+                card.onclick = () => openProfile(originalIndex);
+
+                card.innerHTML = `
+                    <div class="image-container">
+                        <span class="group-badge">${GROUP_LABELS[member.group] || member.group}</span>
+                        <img src="${member.image}" alt="${member.name}">
+                        <div class="hover-indicator">Voir le profil</div>
+                    </div>
+                    <div class="card-info">
+                        <h3>${member.name}</h3>
+                        <p>${member.role}</p>
+                    </div>
+                `;
+
+                teamGrid.appendChild(card);
+            });
+        }
+
+        function openProfile(id) {
+            if (typeof id === 'number' && id >= 0) {
+                window.location.href = `profile.html?id=${id}`;
+            }
+        }
+
+        // Legacy: kept for reference but no longer used on this page
+        function showDetails(member) {
+            const defaults = {
+                dob: null,
+                placeOfBirth: member.location_birth || '',
+                nationality: member.nationality || '',
+                flag: member.flag || '',
+                strengths: member.strengths || member.skills || [],
+                weaknesses: member.weaknesses || [],
+                achievement: member.achievement || member.biggest_achivement || '',
+                funFact: member.funFact || member.funfact || '',
+                bio: member.bio || ''
+            };
+            const m = { ...member, ...defaults };
+
+            document.getElementById('detailImage').src = m.image;
+            document.getElementById('detailName').textContent = m.name || '';
+            document.getElementById('detailRole').textContent = m.role || '';
+            document.getElementById('detailContact').textContent = m.contact ? `Email: ${m.contact}` : '';
+
+            const meta = document.getElementById('detailMeta');
+            meta.innerHTML = '';
+
+            const age = computeAge(m.dob) ?? (typeof m.age === 'number' ? m.age : null);
+            const dobTxt = m.dob ? formatDate(m.dob) : null;
+            const placeTxt = m.placeOfBirth || '';
+            const natTxt = m.flag || m.nationality || '';
+
+            const metaItems = [
+                ['Name', m.name || '—'],
+                ['Age', age ? `${age} years` : '—'],
+                ['Place of birth', `${placeTxt || '—'}`],
+                ['Nationality', natTxt || '—']
+            ];
+            metaItems.forEach(([label, value]) => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span>${label}</span><strong>${value}</strong>`;
+                meta.appendChild(li);
+            });
+
+            fillList('detailStrengths', Array.isArray(m.strengths) ? m.strengths : []);
+            fillList('detailWeaknesses', Array.isArray(m.weaknesses) ? m.weaknesses : []);
+            document.getElementById('detailAchievement').textContent = m.achievement || '—';
+            document.getElementById('detailFunFact').textContent = m.funFact || '—';
+            document.getElementById('detailPage').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function fillList(id, items) {
+            const el = document.getElementById(id);
+            el.innerHTML = '';
+            if (!items || items.length === 0) {
+                const li = document.createElement('li');
+                li.textContent = '—';
+                el.appendChild(li);
+                return;
+            }
+            items.forEach((text) => {
+                const li = document.createElement('li');
+                li.textContent = text;
+                el.appendChild(li);
+            });
+        }
+
+        function computeAge(dobStr) {
+            if (!dobStr) return null;
+            const d = new Date(dobStr);
+            if (isNaN(d.getTime())) return null;
+            const today = new Date();
+            let age = today.getFullYear() - d.getFullYear();
+            const m = today.getMonth() - d.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < d.getDate())) age--;
+            return age;
+        }
+
+        function formatDate(dobStr) {
+            const d = new Date(dobStr);
+            if (isNaN(d.getTime())) return dobStr;
+            const dd = String(d.getDate()).padStart(2, '0');
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const yyyy = d.getFullYear();
+            return `${dd}/${mm}/${yyyy}`;
+        }
+
+        function goBack() {
+            document.getElementById('detailPage').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        generateFilters();
+        generateTeamCards();
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                goBack();
+            }
+        });
+    </script>
+</body>
+
+</html>
