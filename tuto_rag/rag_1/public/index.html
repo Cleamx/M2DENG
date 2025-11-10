@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Chat - Assistant IA</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Assistant RAG</h1>
+            <p>Posez vos questions sur les documents indexés</p>
+        </header>
+
+        <div class="chat-container">
+            <div id="chatMessages" class="chat-messages">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        <strong>Assistant:</strong>
+                        <p>Bonjour ! Je suis votre assistant RAG. Posez-moi une question sur les documents que j'ai indexés.</p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="chatForm" class="chat-input-container">
+                <input 
+                    type="text" 
+                    id="questionInput" 
+                    placeholder="Posez votre question..." 
+                    autocomplete="off"
+                    required
+                >
+                <button type="submit" id="sendButton">
+                    <span id="buttonText">Envoyer</span>
+                    <span id="buttonLoader" class="loader hidden"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
