@@ -1,0 +1,104 @@
+Modèle atomique Gen:
+
+COLOR <- {'jaune','vert','rouge','orange'}
+FORM <- {carree, rectangulaire, triangulaire, ovale}
+VALUE <- [-10,10]
+T <- [0,100]
+
+Jetons <- {('color','form','value',t)}
+- INIT <- ('SEND', 0)
+- sigma in [0,+inf]
+- step in [0,100]
+
+- X <- {0}
+- Y <- {(p,v) | p in [OUT], v in Jetons}
+- S <- {'IDLE','SEND'} x [0,+inf] x [0,100]
+
+- delta_ext (X x S -> S) <- 0
+- delta_int (S -> S) <- holdIn('IDLE', step) 	if phaseIs('SEND') 
+						else holdIn('SEND',0)
+- lambda (S -> Y) <- send(OUT, random(Jetons)) if phaseIs('SEND')
+- ta <- sigma
+
+----------------------------------------------------------
+
+Modèle atomique Form/Value:
+
+COLOR <- {'jaune','vert','rouge','orange'} 
+FORM <- {carree, rectanctangulaire, triangulaire, ovale}
+VALUE <- [-10,10]
+T <- [0,100]
+
+Jetons <- {('color','form','value',t)}
+- INIT <- ('IDLE', inf)
+- sigma in [0,+inf]
+- buffer <- []
+
+- X <- {(p,v) | p in [IN0,..,INn], v in Jetons}
+- Y <- {(p,v) | p in [OUT], v in Jetons}
+- S <- {'IDLE','SEND'} x [0,+inf]
+- delta_ext (X x S -> S) <- 
+				buffer <- []
+				loop p in X:
+						
+					jeton <- peek(p)
+				
+					### transformaton rules
+					if jeton.color == 'jaune' then jeton.form = ovale
+					....
+					buffer.append(jeton)
+
+				hold('SEND',0)
+
+- delta_int (S -> S) <- if len(buffer) > 1 then 
+				holdIn('SEND',0)
+			else passivateIn('IDLE')
+
+- lambda (S -> Y) <- send(OUT, buffer.pop()) if phaseIs('SEND')
+
+- ta <- sigma
+
+------------------------------------------------------------
+
+Modèle atomique Ech
+
+COLOR <- {'jaune','vert','rouge','orange'}
+FORM <- {carree, rectanctangulaire, triangulaire, ovale}
+VALUE <- [-10,10]
+T <- [0,100]
+
+Jetons <- {('color','form','value',t)}
+Buffer <- []
+step in [0,100]
+- INIT <- ('IDLE', step)
+- sigma in [0,+inf]
+
+
+- X <- {(p,v) | p in [IN0,..,INn], v in Jetons}
+- Y <- {(p,v) | p in [OUT], v in Jetons}
+- S <- {'IDLE','SEND'} x [0,+inf] x [0,100] x []
+- delta_ext (X x S -> S) <- 
+				jeton <- peek(IN0)
+				
+				if len(Buffer) < 3 then Buffer.append(jeton)
+				
+				hold('SEND', sigma-elaped)
+
+- delta_int (S -> S) <- is pahseIs('SEND') then holdIn('IDLE', step)
+- lambda (S -> Y) <- 
+			jeton = buffer.pop(max(buffer))
+			if pahseIf('SEND') then send(OUT, jeton)
+			buffer = []
+
+- ta <- sigma
+
+ 
+
+
+
+
+
+
+
+
+

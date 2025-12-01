@@ -1,0 +1,65 @@
+<?xml version='1.0'?>
+<!DOCTYPE qfsmproject SYSTEM 'qfsm.dtd'>
+<qfsmproject version="0.54" author="Qfsm">
+  <machine nummooreout="0" transfontitalic="0" draw_it="1" statefontsize="8" transfont="Helvetica" statefontitalic="0" author="" description="" version="" name="FSM" arrowtype="1" numbits="3" statefontweight="50" statefont="Helvetica" numin="0" transfontsize="8" transfontweight="50" type="2" numout="0" initialstate="4">
+    <outputnames_moore></outputnames_moore>
+    <inputnames></inputnames>
+    <outputnames></outputnames>
+    <itransition ypos="303" endx="222" xpos="162" endy="303"/>
+    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="inf" moore_outputs="" ypos="483" code="0" xpos="191" linewidth="1">IDLE</state>
+    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="step" moore_outputs="" ypos="528" code="1" xpos="467" linewidth="1">SEND</state>
+    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="" ypos="143" code="2" xpos="393" linewidth="1">IDLE:step</state>
+    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="" ypos="134" code="3" xpos="672" linewidth="1">SEND:0</state>
+    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="" ypos="303" code="4" xpos="262" linewidth="1">IDLE:inf</state>
+    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="" ypos="345" code="5" xpos="504" linewidth="1">SEND:0</state>
+    <state pencolor="0" exit_actions="" radius="40" description="" finalstate="0" entry_actions="" moore_outputs="" ypos="83" code="6" xpos="173" linewidth="1">IDLE:0</state>
+    <transition c1x="296.179747924893" c2y="498.8224450924228" c1y="485.0295055694609" description="" straight="1" type="2" ypos="471.2365660464991" endx="430.0769230769231" xpos="229.231160348878" endy="512.6153846153845" c2x="363.1283355009081">
+      <from>0</from>
+      <to>1</to>
+      <inputs default="0" any="0" invert="0">ext()</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="363.1333667154927" c2y="520.1584938595959" c1y="534.4452812516648" description="" straight="1" type="2" ypos="548.7320686437338" endx="223.8159266707995" xpos="432.7920867378393" endy="505.8717064675269" c2x="293.4746466931462">
+      <from>1</from>
+      <to>0</to>
+      <inputs default="0" any="0" invert="0">int()</inputs>
+      <outputs>buffer.pop(max(buffer))</outputs>
+    </transition>
+    <transition c1x="509.8275834131056" c2y="529.9052395077122" c1y="415.9027292973041" description="sigma-elapsed" straight="1" type="2" ypos="495.6023151382792" endx="505.7965337090124" xpos="490.4603924860737" endy="518.2619831502783" c2x="586.9848743067986">
+      <from>1</from>
+      <to>1</to>
+      <inputs default="0" any="0" invert="0">ext()</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="500.799235464535" c2y="120.7000653294461" c1y="128.1321993026261" description="" straight="1" type="2" ypos="135.564333275806" endx="637.7920867378393" xpos="432.3028098278827" endy="113.2679313562662" c2x="569.2956611011871">
+      <from>2</from>
+      <to>3</to>
+      <inputs default="0" any="0" invert="0">int()</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="579.8926071103948" c2y="177.5928502772415" c1y="175.5178619661462" description="" straight="1" type="2" ypos="173.4428736550508" endx="408.9834168205571" xpos="665.3472022553137" endy="179.6678385883369" c2x="494.438011965476">
+      <from>3</from>
+      <to>2</to>
+      <inputs default="0" any="0" invert="0">int()</inputs>
+      <outputs>getJeton()</outputs>
+    </transition>
+    <transition c1x="355.8464145915597" c2y="316.8224450924228" c1y="304.0295055694609" description="" straight="1" type="2" ypos="291.2365660464991" endx="467.0769230769231" xpos="300.231160348878" endy="329.6153846153846" c2x="411.4616688342414">
+      <from>4</from>
+      <to>5</to>
+      <inputs default="0" any="0" invert="0">ext(jeton)</inputs>
+      <outputs></outputs>
+    </transition>
+    <transition c1x="411.4667000488261" c2y="339.1584938595959" c1y="352.4452812516648" description="" straight="1" type="2" ypos="365.7320686437338" endx="294.8159266707995" xpos="469.7920867378393" endy="325.8717064675269" c2x="353.1413133598128">
+      <from>5</from>
+      <to>4</to>
+      <inputs default="0" any="0" invert="0">int()</inputs>
+      <outputs>getJeton()</outputs>
+    </transition>
+    <transition c1x="259.7465102596138" c2y="120.2474810071169" c1y="102.4563513978021" description="" straight="1" type="2" ypos="84.66522178848726" endx="353.3088849314533" xpos="212.9653229236941" endy="138.0386106164317" c2x="306.5276975955336">
+      <from>6</from>
+      <to>2</to>
+      <inputs default="0" any="0" invert="0">int()</inputs>
+      <outputs>getJeton()</outputs>
+    </transition>
+  </machine>
+</qfsmproject>
