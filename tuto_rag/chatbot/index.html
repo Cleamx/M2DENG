@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot - Powered by Mistral</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="logo-icon">🤖</span>
+                <h1>AI Chat</h1>
+            </div>
+            <p class="subtitle">Powered by Mistral AI</p>
+        </header>
+
+        <!-- Chat Container -->
+        <main class="chat-container">
+            <div class="messages" id="messages">
+                <!-- Welcome message -->
+                <div class="message bot-message">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-content">
+                        <p>Bonjour ! Je suis votre assistant IA. Posez-moi une question et je ferai de mon mieux pour
+                            vous aider. 🚀</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- TikTok Video Modal -->
+        <div class="video-modal" id="videoModal">
+            <div class="video-modal-content">
+                <div class="video-header">
+                    <span class="loading-text">⏳ Génération de la réponse en cours...</span>
+                    <div class="loading-spinner"></div>
+                </div>
+                <div class="video-container" id="videoContainer">
+                    <!-- TikTok video will be embedded here -->
+                </div>
+                <p class="video-hint">Profitez de cette vidéo pendant que je réfléchis ! 🎬</p>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <footer class="input-area">
+            <form id="chatForm" class="chat-form">
+                <div class="input-wrapper">
+                    <input type="text" id="userInput" placeholder="Posez votre question ici..." autocomplete="off"
+                        required>
+                    <button type="submit" id="sendButton">
+                        <span class="send-icon">➤</span>
+                    </button>
+                </div>
+            </form>
+        </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="games.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
